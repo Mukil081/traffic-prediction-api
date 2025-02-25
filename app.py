@@ -1,3 +1,4 @@
+import os
 from flask import Flask, request, jsonify
 import pickle
 import numpy as np
@@ -8,8 +9,14 @@ with open('traffic_model.pkl', 'rb') as model_file:
 
 app = Flask(__name__)
 
+@app.route('/')
+def home():
+    return "Traffic Prediction API is running!"
+
 @app.route('/predict', methods=['POST'])
 def predict():
+    return jsonify({"message": "Prediction route is working!"})
+
     try:
         data = request.get_json()  # Get data from request
         features = np.array(data['features']).reshape(1, -1)  # Convert to array
@@ -19,4 +26,5 @@ def predict():
         return jsonify({'error': str(e)})
 
 if __name__ == '__main__':
-    app.run(debug=True)
+    port = int(os.environ.get('PORT', 10000))  # Get the assigned port
+    app.run(host='0.0.0.0', port=port)
